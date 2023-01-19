@@ -9,7 +9,7 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-#include "auth.h"
+#include "config.h"
 
 
 int leftButton = 0;
@@ -140,7 +140,7 @@ void displayError(String label) {
 void update() {
     char label[30];
     HTTPClient http;
-    http.begin("https://thingspeak.com/channels/258548/feed/last.json?timezone=America/Denver");
+    http.begin(TS_URL);
     int httpCode = http.GET();
     if (httpCode > 0) {
         if (httpCode == HTTP_CODE_OK) {
