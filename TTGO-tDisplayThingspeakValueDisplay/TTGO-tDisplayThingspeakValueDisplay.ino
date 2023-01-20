@@ -13,11 +13,13 @@
 
 
 int leftButton = 0;
-int rightButton = 26;
+int rightButton = 35;
 
 DynamicJsonDocument reading(512);
 
 uint32_t now, updatePeriod = 60000;
+
+float vmin = 100,vmax = -100, vcurrent;
 
 TFT_eSPI tft = TFT_eSPI();
 void setup(void) {
@@ -92,28 +94,35 @@ void setup(void) {
     update();
 }
 
-void display(String label, String value) {
-    float v = value.toFloat();
+void display(String label, String ts, String value) {
+    vcurrent = value.toFloat();
+    String time = ts.substring(11, 16);
+    if ((time.substring(0,1) == "00") & (time.substring(3) == "0")) {
+      vmin = 100;
+      vmax = -100;
+    }
+    if (vcurrent > vmax) vmax = vcurrent;
+    if (vcurrent < vmin) vmin = vcurrent;
 
     tft.fillScreen(TFT_BLACK);
 
     tft.setCursor(0, 0, 2);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setTextSize(2);
-    tft.println(label);
+    tft.println(label+" "+time);
 
     tft.setTextColor(TFT_GREEN);
-    if (v < 50.0)
+    if (vcurrent < RANGEYELLOW)
         tft.setTextColor(TFT_YELLOW);
-    if (v < 43.0)
+    if (vcurrent < RANGERED)
         tft.setTextColor(TFT_RED);
 
     tft.setTextFont(7);
     tft.setTextSize(2);
-    if (v > 100) { 
-      tft.printf("%d", int(v));
+    if (vcurrent > 100) { 
+      tft.printf("%d", int(vcurrent));
     } else {
-      tft.printf("%0.1f", v);
+      tft.printf("%0.1f", vcurrent);
     }
 }
 
@@ -128,6 +137,17 @@ void displayIP() {
     tft.printf("signal %ddBm\n",WiFi.RSSI());
 }
 
+void displayMinMax() {
+    tft.fillScreen(TFT_BLACK);
+
+    tft.setCursor(0, 0, 2);
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.setTextSize(2);
+    tft.printf("min %0.1f\n",vmin);
+    tft.printf("now %0.1f\n",vcurrent);
+    tft.printf("max %0.1f\n",vmax);
+}
+
 void displayError(String label) {
     tft.fillScreen(TFT_RED);
 
@@ -138,7 +158,6 @@ void displayError(String label) {
 }
 
 void update() {
-    char label[30];
     HTTPClient http;
     http.begin(TS_URL);
     int httpCode = http.GET();
@@ -147,9 +166,7 @@ void update() {
             String payload = http.getString();
             deserializeJson(reading, payload);
             Serial.println(payload);
-            String ts = reading["created_at"];
-            sprintf(label, "Greenhouse %s", ts.substring(11, 16));
-            display(label, reading["field2"]);
+            display(LABEL, reading["created_at"], reading["field2"]);
         }
     } else {
         Serial.printf("HTTP error: %s\n", http.errorToString(httpCode).c_str());
@@ -164,6 +181,12 @@ void loop() {
     if (!digitalRead(leftButton)) {
         displayIP();
         while (!digitalRead(leftButton)) ;
+        tft.println("updating");
+        update();
+    }
+    if (!digitalRead(rightButton)) {
+        displayMinMax();
+        while (!digitalRead(rightButton)) ;
         tft.println("updating");
         update();
     }
