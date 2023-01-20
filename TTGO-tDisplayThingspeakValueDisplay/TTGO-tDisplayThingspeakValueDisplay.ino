@@ -106,18 +106,22 @@ void display(String label, String ts, String value) {
     if (vcurrent < vmin) vmin = vcurrent;
 
     tft.fillScreen(TFT_BLACK);
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
 
-    tft.setCursor(0, 0, 2);
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    if (vcurrent < RANGEYELLOW) {
+        tft.fillScreen(TFT_YELLOW);
+        tft.setTextColor(TFT_BLACK, TFT_YELLOW);
+    }
+    if (vcurrent < RANGERED) {
+        tft.fillScreen(TFT_RED);
+        tft.setTextColor(TFT_WHITE, TFT_RED);
+    }
+
+    tft.setCursor(10, 0, 2);
     tft.setTextSize(2);
     tft.println(label+" "+time);
 
-    tft.setTextColor(TFT_GREEN);
-    if (vcurrent < RANGEYELLOW)
-        tft.setTextColor(TFT_YELLOW);
-    if (vcurrent < RANGERED)
-        tft.setTextColor(TFT_RED);
-
+    tft.setCursor(10, 35, 2);
     tft.setTextFont(7);
     tft.setTextSize(2);
     if (vcurrent > 100) { 
