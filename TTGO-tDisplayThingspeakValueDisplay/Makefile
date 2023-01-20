@@ -1,4 +1,4 @@
-IP=192.168.0.183
+IP=192.168.0.182
 
 bin:
 	arduino-cli compile --build-path /tmp/arduino-build -b esp32:esp32:esp32doit-devkit-v1 .

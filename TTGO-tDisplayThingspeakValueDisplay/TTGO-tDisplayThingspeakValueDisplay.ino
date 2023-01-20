@@ -14,6 +14,7 @@
 
 int leftButton = 0;
 int rightButton = 35;
+int ADC = 34;
 
 DynamicJsonDocument reading(512);
 
@@ -135,6 +136,10 @@ void displayIP() {
     tft.println(WIFI_SSID);
     tft.println(WiFi.localIP());
     tft.printf("signal %ddBm\n",WiFi.RSSI());
+
+    int adc = analogRead(ADC);
+    float v = (2 * 3.30 * (float(adc)/4096.00));
+    tft.printf("battery %0.2fV\n",v);
 }
 
 void displayMinMax() {
@@ -181,12 +186,18 @@ void loop() {
     if (!digitalRead(leftButton)) {
         displayIP();
         while (!digitalRead(leftButton)) ;
+
+        tft.fillScreen(TFT_BLACK);
+        tft.setCursor(0, 0, 2);
         tft.println("updating");
         update();
     }
     if (!digitalRead(rightButton)) {
         displayMinMax();
         while (!digitalRead(rightButton)) ;
+
+        tft.fillScreen(TFT_BLACK);
+        tft.setCursor(0, 0, 2);
         tft.println("updating");
         update();
     }
