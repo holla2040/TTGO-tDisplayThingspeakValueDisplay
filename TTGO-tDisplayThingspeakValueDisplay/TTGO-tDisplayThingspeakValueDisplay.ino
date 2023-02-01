@@ -142,7 +142,8 @@ void displayIP() {
     tft.printf("signal %ddBm\n",WiFi.RSSI());
 
     int adc = analogRead(ADC);
-    float v = (2 * 3.30 * (float(adc)/4096.00));
+    float v = (2 * 3.30 * (float(adc)/4096.00)) * (1100 / 1000.0);
+
     tft.printf("battery %0.2fV\n",v);
 }
 
