@@ -142,7 +142,9 @@ void displayIP() {
     tft.printf("signal %ddBm\n",WiFi.RSSI());
 
     int adc = analogRead(ADC);
-    float v = (2 * 3.30 * (float(adc)/4096.00)) * (1100 / 1000.0);
+    // https://github.com/Xinyuan-LilyGO/TTGO-T-Display/issues/35
+    // float v = (2 * 3.30 * (float(adc)/4095.00)) * (1100 / 1000.0);
+    float v = (float(adc)/4095.00) * 7.26;
 
     tft.printf("battery %0.2fV\n",v);
 }
