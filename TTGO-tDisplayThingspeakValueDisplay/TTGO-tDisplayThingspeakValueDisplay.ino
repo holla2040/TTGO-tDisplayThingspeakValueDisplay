@@ -98,7 +98,7 @@ void setup(void) {
 void display(String label, String ts, String value) {
     vcurrent = value.toFloat();
     String time = ts.substring(11, 16);
-    if ((time.substring(0,1) == "00") & (time.substring(3) == "0")) {
+    if ((time.substring(0,2) == "00") && (time.substring(3,4) == "0")) {
       vmin = 100;
       vmax = -100;
     }
