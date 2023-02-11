@@ -4,6 +4,8 @@
 #include <SPI.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <WiFiManager.h>
+
 
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
@@ -22,10 +24,22 @@ uint32_t now, updatePeriod = 60000;
 
 float vmin = 100,vmax = -100, vcurrent;
 
+
 TFT_eSPI tft = TFT_eSPI();
+
+void wmCallback(WiFiManager *wm){
+    tft.println("Set AP, connect to");
+    tft.println("ThingSpeak Display");
+    tft.println("Browse to");
+    tft.println("   192.168.4.1");
+}
+
 void setup(void) {
     Serial.begin(115200);
     Serial.println("\n\nthingspeak display");
+
+    pinMode(leftButton, INPUT_PULLUP);
+    pinMode(rightButton, INPUT_PULLUP);
 
     tft.init();
     tft.setRotation(3);
@@ -34,20 +48,16 @@ void setup(void) {
     tft.setCursor(0, 0, 2);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setTextSize(2);
-    tft.println("Wifi Connecting");
-    tft.println(WIFI_SSID);
 
-    pinMode(leftButton, INPUT_PULLUP);
-    pinMode(rightButton, INPUT_PULLUP);
+    WiFiManager wifiManager;
+    wifiManager.setAPCallback(wmCallback);
 
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    Serial.print("WiFi Connecting");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(250);
-        Serial.print(".");
-    }
-    Serial.println();
+    // wifiManager.resetSettings();
+
+    wifiManager.autoConnect("ThingSpeak Display");
+
+    tft.println("Connected");
+
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
 
@@ -137,7 +147,7 @@ void displayIP() {
     tft.setCursor(0, 0, 2);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setTextSize(2);
-    tft.println(WIFI_SSID);
+    tft.println(WiFi.SSID());
     tft.println(WiFi.localIP());
     tft.printf("signal %ddBm\n",WiFi.RSSI());
 
