@@ -6,13 +6,9 @@
 #include <ArduinoJson.h>
 #include <WiFiManager.h>
 
-
-#include <ESPmDNS.h>
-#include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
 #include "config.h"
-
 
 int leftButton = 0;
 int rightButton = 35;
