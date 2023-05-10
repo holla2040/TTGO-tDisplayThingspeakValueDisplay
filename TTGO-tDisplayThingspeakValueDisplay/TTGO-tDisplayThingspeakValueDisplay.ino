@@ -8,6 +8,10 @@
 
 #include <ArduinoOTA.h>
 
+/* This requires a different TFT_eSPI library
+   available here https://github.com/Xinyuan-LilyGO/TTGO-T-Display */
+
+
 #include "config.h"
 
 int leftButton = 0;
